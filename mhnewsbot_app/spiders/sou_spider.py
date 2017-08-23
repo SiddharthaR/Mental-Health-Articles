@@ -8,20 +8,28 @@ tbl = string.maketrans('-', ' ') #To protect against cases where the article has
 
 articles = {'title': [], 'teaser': [], 'link': [], 'date': [], 'author': [], 'source': []}
 
+# Create list of urls for scrapy to crawl. Hardcoded to follow Science of us format. 
+def url_lister():
+	url_list = []
+	article_count = 0
+	while article_count < 150: 											# Arbitrary limit, this goes up to the thousands
+		url = 'http://nymag.com/scienceofus/?start=%s' %article_count
+		url_list.append(url)
+		article_count += 50
+	return url_list
+
 class SOUSpider(Spider):
 	name = 'scienceofus'
-	start_urls = [
-    	'http://nymag.com/scienceofus/',
-	]
+	start_urls = url_lister()
 
 	def parse(self, response):
 		for article in response.xpath('//ul[@class="newsfeed-article-list"]'):
-			title = article.xpath('.//li[contains(@class, "newsfeed-article")]/div[@class="headline-wrapper"]/a[@class="headline-link"]/h3[@class="headline"]/text()').extract()
+			title = article.xpath('.//li[contains(@class, "newsfeed-article")]/div[@class="headline-wrapper"]/a[@class="headline-link"]/h3[@class="headline"]').extract()
 	        for i in title:
 	        	for search_term in mh_search_terms:
 		        	if search_term in i.upper().strip():
 						articles['title'].append(article.xpath('.//li[contains(@class, "newsfeed-article")]/div[@class="headline-wrapper"]/a[@class="headline-link"]/h3[@class="headline"]/text()').extract()[title.index(i)])
-						articles['teaser'].append(article.xpath('.//li[contains(@class, "newsfeed-article")]/p[@class = "teaser"]/text()').extract()[title.index(i)]) #currently broken, sometimes indexes article right before the one in question
+						articles['teaser'].append(article.xpath('.//li[contains(@class, "newsfeed-article")]/p[@class = "teaser"]/text()').extract()[title.index(i)])
 						articles['link'].append(article.xpath('.//li[contains(@class, "newsfeed-article")]/a[@class = "read-more"]/@href').extract()[title.index(i)])
 						articles['date'].append(article.xpath('.//li[contains(@class, "newsfeed-article")]/div[@class="headline-wrapper"]/div[@class="headline-above"]/time/text()').extract()[title.index(i)])
 						articles['author'].append(article.xpath('.//li[contains(@class, "newsfeed-article")]/span[@class="by-authors"]/span/span[@class="author"]/text()').extract()[title.index(i)])
