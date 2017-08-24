@@ -7,3 +7,4 @@ class SOUItem(scrapy.Item):
 	link = scrapy.Field()
 	date = scrapy.Field()
 	author = scrapy.Field()
+	source = scrapy.Field()
