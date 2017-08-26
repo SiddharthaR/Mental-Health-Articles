@@ -13,3 +13,5 @@ DATABASE = {
     'password': '',
     'database': 'scrape'
 }
+
+ITEM_PIPELINES = {'mhnewsbot_app.pipelines.ArticlesPipeline': 100} # Needs to be a dictionary

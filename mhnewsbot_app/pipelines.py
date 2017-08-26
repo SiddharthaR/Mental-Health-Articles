@@ -1,4 +1,4 @@
-from sqlalchemy import sessionmaker
+from sqlalchemy.orm import sessionmaker
 from models import Articles, db_connect, create_articles_table
 
 class ArticlesPipeline(object):
